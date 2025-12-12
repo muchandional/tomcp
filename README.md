@@ -4,6 +4,25 @@
 
 Convert any website URL into an MCP (Model Context Protocol) server config for your AI tools, or chat directly with any website's content.
 
+## Why toMCP?
+
+### Clean Data, Fewer Tokens
+
+Standard `web_fetch` tools dump raw HTML into your AI's context—navbars, scripts, footers, and noise. toMCP runs pages through a **readability parser** and converts to **clean markdown**, using a fraction of the tokens.
+
+### Persistent Documentation Context
+
+AI assistants hallucinate API details when they lack documentation. MCP Resources are **pinned as permanent, read-only context**—the model won't skip or forget them. Ideal for framework docs, API references, and internal team docs.
+
+### web_fetch vs MCP Resources
+
+| | web_fetch | MCP Resource |
+|--|-----------|--------------|
+| Data | Raw HTML with noise | Clean markdown |
+| Tokens | High | Low |
+| Persistence | Per-request | Always available |
+| Hallucination | Higher | Lower |
+
 ## Usage
 
 ### MCP Server
