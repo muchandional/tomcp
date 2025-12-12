@@ -198,6 +198,13 @@ function createMcpError(id: number | string | null, code: number, message: strin
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    // Redirect www to non-www
+    if (url.hostname === 'www.tomcp.org') {
+      url.hostname = 'tomcp.org';
+      return Response.redirect(url.toString(), 301);
+    }
+
     const path = url.pathname.slice(1); // Remove leading slash
 
     // CORS headers
@@ -291,11 +298,14 @@ export default {
     }
 
     // Serve static assets from GitHub
-    if (path === 'logo.svg' || path === 'logo.png' || path === 'logowhite.svg') {
+    if (path === 'logo.svg' || path === 'logo.png' || path === 'logowhite.svg' || path === 'robots.txt' || path === 'sitemap.xml') {
       const timestamp = Date.now();
       const assetUrl = `https://raw.githubusercontent.com/Ami3466/tomcp/main/${path}?t=${timestamp}`;
       const response = await fetch(assetUrl, { cf: { cacheTtl: 0 } });
-      const contentType = path.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
+      const contentType = path.endsWith('.svg') ? 'image/svg+xml'
+        : path.endsWith('.xml') ? 'application/xml'
+        : path.endsWith('.txt') ? 'text/plain'
+        : 'image/png';
       return new Response(response.body, {
         headers: { ...corsHeaders, 'Content-Type': contentType, 'Cache-Control': 'no-cache, no-store, must-revalidate' },
       });
