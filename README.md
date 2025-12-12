@@ -62,10 +62,6 @@ curl -X POST https://tomcp.org/chat \
   -d '{"url": "docs.stripe.com", "message": "How do I create a payment intent?"}'
 ```
 
-### Rate Limits
-- 5 requests per IP per day
-- 200 total requests per day (global)
-
 ## Tech Stack
 
 - **Frontend**: Vanilla HTML/CSS/JS with Tailwind CSS
