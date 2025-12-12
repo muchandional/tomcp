@@ -316,8 +316,11 @@ export default {
     if (!path) {
       try {
         const timestamp = Date.now();
-        const htmlUrl = `https://raw.githubusercontent.com/Ami3466/tomcp/main/index.html?t=${timestamp}`;
-        const response = await fetch(htmlUrl, { cf: { cacheTtl: 0 } });
+        const htmlUrl = `https://raw.githubusercontent.com/Ami3466/tomcp/main/index.html?v=${timestamp}`;
+        const response = await fetch(htmlUrl, {
+          cf: { cacheTtl: 0, cacheEverything: false },
+          headers: { 'Cache-Control': 'no-cache' }
+        });
         if (!response.ok) {
           throw new Error(`Failed to fetch HTML: ${response.status}`);
         }
