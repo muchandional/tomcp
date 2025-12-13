@@ -2,7 +2,14 @@
 
 **Turn any website into an MCP server + Chat with any website.**
 
-Convert any website URL into an MCP (Model Context Protocol) server config for your AI tools, or chat directly with any website's content.
+Simply add `tomcp.org/` before any URL:
+
+```
+tomcp.org/docs.stripe.com
+tomcp.org/react.dev
+tomcp.org/your-docs.com/api
+```
+Or go to https://tomcp.org and paste the URL there.
 
 ## Why toMCP?
 
@@ -28,19 +35,6 @@ AI assistants hallucinate API details when they lack documentation. MCP Resource
 
 [![toMCP Demo](https://img.youtube.com/vi/-o2_T8TB9dQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=-o2_T8TB9dQ)
 
-## Usage
-
-### MCP Server
-Simply add `tomcp.org/` before any URL:
-
-```
-tomcp.org/docs.stripe.com
-tomcp.org/react.dev
-tomcp.org/your-docs.com/api
-```
-
-### Chat with Website
-Visit [tomcp.org](https://tomcp.org), paste a URL, and start chatting with any website's content using AI.
 
 ## Supported AI Tools
 
@@ -95,7 +89,7 @@ These models are available for everyone with no setup:
 - **Mistral 7B** (Mistral) - Efficient instruction-following
 - **Gemma 7B LoRA** (Google) - Lightweight and fast
 
-### Premium Models (API Key Required)
+### paid Models (API Key Required)
 Add your Cloudflare Workers AI API key to unlock these models:
 - **Llama 3.3 70B** (Meta) - Most powerful Llama model
 - **DeepSeek R1 32B** (DeepSeek) - Advanced reasoning
@@ -106,7 +100,7 @@ Add your Cloudflare Workers AI API key to unlock these models:
 ## Adding Your API Key
 
 You can add your own Cloudflare Workers AI API key to:
-1. **Unlock all premium models** - Access larger, more capable models
+1. **Unlock all paid models** - Access larger, more capable models
 2. **Bypass rate limits** - No daily request limits
 3. **Use your own quota** - Charges go to your Cloudflare account
 
@@ -119,7 +113,7 @@ You can add your own Cloudflare Workers AI API key to:
 1. Start a chat session on [tomcp.org](https://tomcp.org)
 2. Below the chat input, you'll see "Add API key from Cloudflare Workers AI"
 3. Paste your API key and click "Save"
-4. Premium models will now be unlocked in the dropdown
+4. paid models will now be unlocked in the dropdown
 
 ### Where Is the API Key Stored?
 - Your API key is stored **locally in your browser** using `localStorage`
@@ -134,7 +128,7 @@ The available models are fetched dynamically from the Cloudflare Workers AI API:
 1. Frontend calls `GET /models` endpoint on page load
 2. Worker fetches models from `api.cloudflare.com/client/v4/accounts/{id}/ai/models/search`
 3. Models are filtered to "Text Generation" tasks and cached for 5 minutes
-4. Frontend displays free models as enabled, premium models as disabled (until API key is added)
+4. Frontend displays free models as enabled, paid models as disabled (until API key is added)
 
 ### Chat Flow
 1. User enters a URL and starts chatting
@@ -163,7 +157,7 @@ With your API key:
 - Chat with any website using AI
 - Side-by-side MCP Config + Chat interface
 - **Multiple AI models** - Choose from Llama, Mistral, Gemma, and more
-- **Bring your own API key** - Unlock premium models and bypass rate limits
+- **Bring your own API key** - Unlock paid models and bypass rate limits
 
 ## License
 
