@@ -24,6 +24,10 @@ AI assistants hallucinate API details when they lack documentation. MCP Resource
 | Hallucination | Higher | Lower |
 | JS Support | Full (SPAs / Dynamic) | Static Only (SSG) |
 
+## Demo
+
+[![toMCP Demo](https://img.youtube.com/vi/-o2_T8TB9dQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=-o2_T8TB9dQ)
+
 ## Usage
 
 ### MCP Server
