@@ -598,11 +598,11 @@
 
     // Try example button
     document.getElementById('tryExample').addEventListener('click', () => {
-      document.getElementById('urlInput').value = 'flowengine.cloud';
+      document.getElementById('urlInput').value = 'flowengine.cloud/api-docs';
       updateOutput();
       // Also update chat URL (since programmatic value change doesn't trigger input event)
       // Note: updateChatUrl is defined later but this runs after page load
-      setTimeout(() => updateChatUrl('flowengine.cloud'), 0);
+      setTimeout(() => updateChatUrl('flowengine.cloud/api-docs'), 0);
     });
 
     // URL input handler (MCP only - chat handler added after enableChat is defined)
