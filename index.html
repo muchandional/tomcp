@@ -140,7 +140,7 @@
         flex: 1 !important;
       }
       .mobile-tools-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
       }
       .mobile-fullscreen-input-row {
         flex-direction: column !important;
@@ -210,26 +210,19 @@
             >
               Try Example
             </button>
-            <a
-              href="https://github.com/Ami3466/tomcp"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors flex items-center justify-center gap-2"
-            >
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-              </svg>
-              <span>GitHub</span>
-            </a>
           </div>
         </div>
       </div>
     </header>
 
+    <div class="mb-6 flex justify-center lg:hidden">
+      <a class="github-button" href="https://github.com/ami3466/tomcp" data-color-scheme="no-preference: dark_dimmed; light: light_high_contrast; dark: dark;" data-size="large" data-show-count="true" aria-label="Star ami3466/tomcp on GitHub">Star</a>
+    </div>
+
     <!-- Side by Side: MCP Config + Chat -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       <!-- Left: MCP Config -->
-      <main id="mcpSection" class="bg-gray-900/50 border border-gray-800 rounded-xl p-5 backdrop-blur-sm">
+      <main id="mcpSection" class="bg-gray-900/50 border border-gray-800 rounded-xl p-4 backdrop-blur-sm">
         <div class="flex items-center gap-2 mb-4">
           <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
@@ -240,7 +233,7 @@
         <!-- AI Tools Tabs -->
         <div class="mb-4">
           <label class="block text-xs font-medium text-gray-400 mb-2">Select your AI tool</label>
-          <div id="toolsGrid" class="mobile-tools-grid grid grid-cols-5 gap-2">
+          <div id="toolsGrid" class="mobile-tools-grid grid grid-cols-7 gap-1.5">
             <!-- Tools will be inserted here -->
           </div>
         </div>
@@ -285,8 +278,7 @@
           </details>
 
           <a
-            id="testLink"
-            href="#"
+            href="https://flowengine.cloud/mcp-merge"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-1.5 text-blue-400 hover:text-blue-300 text-xs transition-colors"
@@ -294,7 +286,7 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
             </svg>
-            Test MCP endpoint
+            MCP Merge Tool
           </a>
         </div>
 
@@ -404,6 +396,10 @@
       </div>
     </div>
 
+    <div class="mb-8 hidden lg:flex justify-center">
+      <a class="github-button" href="https://github.com/ami3466/tomcp" data-color-scheme="no-preference: dark_dimmed; light: light_high_contrast; dark: dark;" data-size="large" data-show-count="true" aria-label="Star ami3466/tomcp on GitHub">Star</a>
+    </div>
+
     <!-- Fullscreen Chat Modal -->
     <div id="fullscreenModal" class="fixed inset-0 bg-black/95 z-50 hidden flex-col p-4">
       <div class="flex items-center justify-between mb-4">
@@ -447,30 +443,56 @@
       </div>
     </div>
 
-    <!-- Features -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-      <div class="bg-gray-900/30 border border-gray-800/50 rounded-lg p-4">
-        <h3 class="text-white font-medium mb-1">Any Website</h3>
-        <p class="text-gray-500 text-sm">Works with any public URL - docs, blogs, APIs</p>
-      </div>
-      <div class="bg-gray-900/30 border border-gray-800/50 rounded-lg p-4">
-        <h3 class="text-white font-medium mb-1">No Setup</h3>
-        <p class="text-gray-500 text-sm">Just paste the config and restart your AI tool</p>
-      </div>
-      <div class="bg-gray-900/30 border border-gray-800/50 rounded-lg p-4">
-        <h3 class="text-white font-medium mb-1">Free Forever</h3>
-        <p class="text-gray-500 text-sm">Powered by Cloudflare Workers - no limits</p>
+    <!-- Comparison Table -->
+    <div class="mb-12">
+      <!-- Comparison Table - full width like the grid above -->
+      <div class="bg-gray-900/50 border border-gray-700 rounded-2xl p-8">
+        <h3 class="text-2xl font-semibold text-white mb-6 text-center">web_fetch vs MCP Resources</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b-2 border-gray-600">
+                <th class="text-left py-4 px-4 text-gray-400 text-lg font-medium"></th>
+                <th class="text-center py-4 px-6 text-gray-400 text-lg font-medium">web_fetch</th>
+                <th class="text-center py-4 px-6 text-lg font-medium text-green-400">MCP Resource</th>
+              </tr>
+            </thead>
+            <tbody class="text-lg">
+              <tr class="border-b border-gray-700/50">
+                <td class="py-5 px-4 text-gray-300 font-medium">Data Quality</td>
+                <td class="py-5 px-6 text-center text-gray-400">Raw HTML with noise</td>
+                <td class="py-5 px-6 text-center text-green-400 font-medium">Clean markdown</td>
+              </tr>
+              <tr class="border-b border-gray-700/50">
+                <td class="py-5 px-4 text-gray-300 font-medium">Token Usage</td>
+                <td class="py-5 px-6 text-center text-gray-400">High</td>
+                <td class="py-5 px-6 text-center text-green-400 font-medium">Low</td>
+              </tr>
+              <tr class="border-b border-gray-700/50">
+                <td class="py-5 px-4 text-gray-300 font-medium">Persistence</td>
+                <td class="py-5 px-6 text-center text-gray-400">Per-request only</td>
+                <td class="py-5 px-6 text-center text-green-400 font-medium">Always available</td>
+              </tr>
+              <tr class="border-b border-gray-700/50">
+                <td class="py-5 px-4 text-gray-300 font-medium">Hallucination Risk</td>
+                <td class="py-5 px-6 text-center text-gray-400">Higher</td>
+                <td class="py-5 px-6 text-center text-green-400 font-medium">Lower</td>
+              </tr>
+              <tr>
+                <td class="py-5 px-4 text-gray-300 font-medium">JavaScript Support</td>
+                <td class="py-5 px-6 text-center text-green-400 font-medium">Full (SPAs / Dynamic)</td>
+                <td class="py-5 px-6 text-center text-gray-400">Static only (SSG)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <!-- Footer -->
-    <footer class="text-center text-gray-500 text-sm space-y-4">
-      <a href="https://github.com/Ami3466/tomcp" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-white text-sm font-medium transition-colors">
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-        GitHub
-      </a>
+    <footer class="text-center text-gray-500 text-sm">
       <p>
-        <a href="https://github.com/Ami3466/tomcp" target="_blank" class="text-blue-400 hover:text-blue-300">What is MCP?</a>
+        <a href="https://modelcontextprotocol.io" target="_blank" class="text-blue-400 hover:text-blue-300">What is MCP?</a>
         · Built with
         <a href="https://flowengine.cloud" target="_blank" class="text-blue-400 hover:text-blue-300">FlowEngine</a>
       </p>
@@ -482,10 +504,12 @@
 
     const AI_TOOLS = [
       { id: 'cursor', name: 'Cursor', configPath: '~/.cursor/mcp.json', icon: 'https://cursor.sh/apple-touch-icon.png' },
-      { id: 'claude', name: 'Claude', configPath: '~/.claude/claude_desktop_config.json', icon: 'https://www.anthropic.com/images/icons/apple-touch-icon.png' },
+      { id: 'claude', name: 'Claude', configPath: '~/Library/Application Support/Claude/claude_desktop_config.json', icon: 'https://www.anthropic.com/images/icons/apple-touch-icon.png' },
       { id: 'windsurf', name: 'Windsurf', configPath: '~/.codeium/windsurf/mcp_config.json', icon: 'https://codeium.com/favicon.svg' },
-      { id: 'vscode', name: 'VS Code', configPath: '.vscode/mcp.json', icon: 'https://code.visualstudio.com/apple-touch-icon.png' },
-      { id: 'cline', name: 'Cline', configPath: '~/.cline/mcp_settings.json', icon: 'https://cline.bot/assets/branding/favicons/apple-touch-icon.png' },
+      { id: 'vscode', name: 'VS Code', configPath: 'Settings → Extensions → Copilot → MCP', icon: 'https://code.visualstudio.com/apple-touch-icon.png' },
+      { id: 'cline', name: 'Cline', configPath: 'Cline → ☰ → MCP Servers', icon: 'https://cline.bot/assets/branding/favicons/apple-touch-icon.png' },
+      { id: 'antigravity', name: 'Antigravity', configPath: '~/.gemini/antigravity/mcp_config.json', icon: 'https://files.brandlogos.net/svg/HNipmYPqfV/Google_Antigravity-logo_brandlogos.net_e23c83.svg' },
+      { id: 'kiro', name: 'Kiro', configPath: '.kiro/settings/mcp.json', icon: 'https://kiro.dev/icon.svg?fe599162bb293ea0' },
     ];
 
     let selectedTool = AI_TOOLS[0];
@@ -497,7 +521,7 @@
       grid.innerHTML = AI_TOOLS.map(tool => `
         <button
           data-tool-id="${tool.id}"
-          class="tool-btn group relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200 ${
+          class="tool-btn group relative flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all duration-200 ${
             selectedTool.id === tool.id
               ? 'border-white/40 bg-white/10 scale-[1.02]'
               : 'border-gray-800 bg-gray-900/30 hover:border-gray-600 hover:bg-gray-800/50'
@@ -539,17 +563,98 @@
       return { domain, fullPath: cleanUrl };
     }
 
-    // Generate MCP config
+    // Generate MCP config based on selected tool
     function generateConfig(fullPath) {
       const domain = fullPath.split('/')[0];
       const name = domain.replace(/\./g, '-');
-      return JSON.stringify({
-        mcpServers: {
-          [name]: {
-            url: `${MCP_BASE_URL}/${fullPath}`,
-          },
-        },
-      }, null, 2);
+      const mcpUrl = `${MCP_BASE_URL}/${fullPath}`;
+      
+      switch (selectedTool.id) {
+        case 'cursor':
+          // Cursor: Remote Server with url
+          return JSON.stringify({
+            mcpServers: {
+              [name]: {
+                url: mcpUrl,
+              },
+            },
+          }, null, 2);
+        
+        case 'claude':
+          // Claude Desktop: Local Server only (no remote URL support)
+          return JSON.stringify({
+            mcpServers: {
+              [name]: {
+                command: "npx",
+                args: ["-y", "@anthropic-ai/claude-code-mcp", mcpUrl],
+              },
+            },
+          }, null, 2);
+        
+        case 'windsurf':
+          // Windsurf: Remote Server with serverUrl
+          return JSON.stringify({
+            mcpServers: {
+              [name]: {
+                serverUrl: mcpUrl,
+              },
+            },
+          }, null, 2);
+        
+        case 'vscode':
+          // VS Code: uses "mcp" > "servers" with type "http"
+          return JSON.stringify({
+            mcp: {
+              servers: {
+                [name]: {
+                  type: "http",
+                  url: mcpUrl,
+                },
+              },
+            },
+          }, null, 2);
+        
+        case 'cline':
+          // Cline: uses url with type streamableHttp
+          return JSON.stringify({
+            mcpServers: {
+              [name]: {
+                url: mcpUrl,
+                type: "streamableHttp",
+              },
+            },
+          }, null, 2);
+        
+        case 'antigravity':
+          // Google Antigravity: Remote Server with serverUrl
+          return JSON.stringify({
+            mcpServers: {
+              [name]: {
+                serverUrl: mcpUrl,
+              },
+            },
+          }, null, 2);
+        
+        case 'kiro':
+          // Kiro: uses type streamable-http with url
+          return JSON.stringify({
+            mcpServers: {
+              [name]: {
+                type: "streamable-http",
+                url: mcpUrl,
+              },
+            },
+          }, null, 2);
+        
+        default:
+          return JSON.stringify({
+            mcpServers: {
+              [name]: {
+                url: mcpUrl,
+              },
+            },
+          }, null, 2);
+      }
     }
 
     // Update output
@@ -571,7 +676,6 @@
         document.getElementById('stepConfigPath').textContent = selectedTool.configPath;
         document.getElementById('stepToolName').textContent = selectedTool.name;
         document.querySelector('#codeBlock code').textContent = generateConfig(fullPath);
-        document.getElementById('testLink').href = `${MCP_BASE_URL}/${fullPath}`;
       } else {
         outputSection.classList.add('hidden');
         emptyState.classList.remove('hidden');
@@ -1022,5 +1126,7 @@
       }
     })();
   </script>
+  <!-- GitHub buttons script -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
 </html>
