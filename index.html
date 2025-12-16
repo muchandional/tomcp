@@ -363,15 +363,44 @@
 
           <!-- API Key Section -->
           <div id="apiKeySection" class="mt-3 hidden">
-            <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
-              <p class="text-gray-400 text-xs mb-2">
-                Add API key from <a href="https://developers.cloudflare.com/workers-ai/get-started/rest-api/#1-get-api-token-and-account-id" target="_blank" class="text-blue-400 hover:text-blue-300 underline">Cloudflare Workers AI</a> to use all models
-              </p>
+            <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-3 space-y-2">
+              <!-- How to get API key (collapsed) -->
+              <details class="bg-gray-900/30 border border-gray-700 rounded-lg">
+                <summary class="text-blue-400 hover:text-blue-300 font-medium p-2.5 cursor-pointer flex items-center gap-2 text-xs">
+                  <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                  </svg>
+                  Add API key from Cloudflare Workers AI to use all models
+                </summary>
+                <div class="px-3 pb-3">
+                  <ol class="text-gray-400 text-xs space-y-2 list-decimal list-inside">
+                    <li>Go to <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank" class="text-blue-400 hover:text-blue-300 underline">Cloudflare API Tokens</a></li>
+                    <li>Click <strong class="text-white">"Create Token"</strong></li>
+                    <li>Click <strong class="text-white">"Get started"</strong> under Custom Token</li>
+                    <li>Add permissions:
+                      <ul class="ml-4 mt-1 space-y-0.5 list-disc list-inside text-gray-500">
+                        <li>Account → Account Settings → <strong class="text-gray-300">Read</strong></li>
+                        <li>Account → Workers AI → <strong class="text-gray-300">Edit</strong></li>
+                      </ul>
+                    </li>
+                    <li>Under Account Resources, select <strong class="text-white">your account</strong></li>
+                    <li>Click <strong class="text-white">"Continue to summary"</strong> → <strong class="text-white">"Create Token"</strong></li>
+                    <li>Copy the token and paste it below</li>
+                  </ol>
+                  <p class="text-yellow-500/80 text-xs mt-2 flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    Note: Use an API Token, not the Global API Key
+                  </p>
+                </div>
+              </details>
+
               <div id="apiKeyInputArea" class="flex gap-2">
                 <input
                   type="password"
                   id="apiKeyInput"
-                  placeholder="Your API key..."
+                  placeholder="Paste your API token here..."
                   class="flex-1 px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
                 >
                 <button
@@ -382,7 +411,12 @@
                 </button>
               </div>
               <div id="apiKeySavedArea" class="hidden flex items-center justify-between">
-                <span class="text-green-400 text-sm">API key saved</span>
+                <span class="text-green-400 text-sm flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  API key saved - all models unlocked
+                </span>
                 <button
                   id="clearApiKeyBtn"
                   class="px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white text-xs font-medium transition-colors"
@@ -725,6 +759,7 @@
     let isLoading = false;
     let chatStarted = false;
     let userApiKey = localStorage.getItem('tomcp_api_key') || '';
+    let userAccountId = localStorage.getItem('tomcp_account_id') || '';
     let selectedModel = localStorage.getItem('tomcp_model') || '@cf/meta/llama-3.1-8b-instruct';
 
     // Available AI models - fallback if API fails
@@ -793,21 +828,54 @@
       apiKeySection.classList.remove('hidden');
     }
 
-    // Save API key
-    saveApiKeyBtn.addEventListener('click', () => {
+    // Save API key with validation
+    saveApiKeyBtn.addEventListener('click', async () => {
       const key = apiKeyInput.value.trim();
-      if (key && key.length > 10) {
-        userApiKey = key;
-        localStorage.setItem('tomcp_api_key', key);
-        updateApiKeyUI();
+      if (!key || key.length < 20) {
+        alert('API key must be at least 20 characters. Cloudflare API tokens are longer.');
+        return;
       }
+
+      // Show loading state
+      saveApiKeyBtn.disabled = true;
+      saveApiKeyBtn.textContent = 'Validating...';
+
+      try {
+        const response = await fetch(CHAT_API_URL.replace('/chat', '/validate-api-key'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ apiKey: key })
+        });
+
+        const result = await response.json();
+
+        if (result.valid && result.accountId) {
+          userApiKey = key;
+          userAccountId = result.accountId;
+          localStorage.setItem('tomcp_api_key', key);
+          localStorage.setItem('tomcp_account_id', result.accountId);
+          updateApiKeyUI();
+          // Enable paid models now that we have a valid API key
+          renderModels();
+        } else {
+          alert('Invalid API key: ' + (result.error || 'Please check your Cloudflare API token.'));
+        }
+      } catch (error) {
+        alert('Failed to validate API key. Please try again.');
+      }
+
+      saveApiKeyBtn.disabled = false;
+      saveApiKeyBtn.textContent = 'Save';
     });
 
     // Clear API key
     clearApiKeyBtn.addEventListener('click', () => {
       userApiKey = '';
+      userAccountId = '';
       localStorage.removeItem('tomcp_api_key');
+      localStorage.removeItem('tomcp_account_id');
       updateApiKeyUI();
+      renderModels(); // Re-render to disable paid models
     });
 
     // Initialize API key UI
@@ -820,21 +888,24 @@
         document.getElementById('fullscreenModelSelect')
       ].filter(Boolean);
 
-      // Show all models, disable paid ones
+      const hasApiKey = !!userApiKey && userApiKey.length > 20;
+
+      // Show all models, disable paid ones unless user has API key
       const optionsHtml = AI_MODELS.map(model => {
         const isPaid = !model.free;
+        const isDisabled = isPaid && !hasApiKey;
         const label = isPaid
-          ? `${model.name} (add api key to use this model)`
+          ? (hasApiKey ? `${model.name} (${model.provider})` : `${model.name} (add api key)`)
           : `${model.name} (${model.provider})`;
-        return `<option value="${model.id}" ${selectedModel === model.id ? 'selected' : ''} ${isPaid ? 'disabled' : ''}>${label}</option>`;
+        return `<option value="${model.id}" ${selectedModel === model.id ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}>${label}</option>`;
       }).join('');
 
       selects.forEach(select => {
         select.innerHTML = optionsHtml;
-        // Set first FREE model as default if current selection is invalid
-        const freeModels = AI_MODELS.filter(m => m.free);
-        if (!freeModels.some(m => m.id === selectedModel) && freeModels.length > 0) {
-          selectedModel = freeModels[0].id;
+        // Set first available model as default if current selection is invalid/disabled
+        const availableModels = AI_MODELS.filter(m => m.free || hasApiKey);
+        if (!availableModels.some(m => m.id === selectedModel) && availableModels.length > 0) {
+          selectedModel = availableModels[0].id;
           localStorage.setItem('tomcp_model', selectedModel);
         }
         select.value = selectedModel;
@@ -930,9 +1001,10 @@
           model: selectedModel
         };
 
-        // Include API key if available (bypasses rate limits)
-        if (userApiKey) {
+        // Include API key and account ID if available (uses user's quota)
+        if (userApiKey && userAccountId) {
           requestBody.apiKey = userApiKey;
+          requestBody.accountId = userAccountId;
         }
 
         const response = await fetch(CHAT_API_URL, {
@@ -941,22 +1013,43 @@
           body: JSON.stringify(requestBody)
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
         const data = await response.json();
         removeLoadingIndicator();
 
-        if (data.error) {
-          addMessage('assistant', `Error: ${data.error}`);
+        if (!response.ok || data.error) {
+          // Handle different error types with helpful messages
+          let errorMsg = data.error || `HTTP ${response.status}`;
+          const errorType = data.errorType || 'UNKNOWN';
+
+          if (errorType === 'RATE_LIMIT' || response.status === 429) {
+            errorMsg = '⚠️ Rate limit exceeded. Add a Cloudflare API key in the settings above to use your own quota and bypass limits.';
+            // Highlight the API key section
+            apiKeySection.classList.remove('hidden');
+            apiKeySection.classList.add('ring-2', 'ring-yellow-500');
+            setTimeout(() => apiKeySection.classList.remove('ring-2', 'ring-yellow-500'), 3000);
+          } else if (errorType === 'FETCH_ERROR') {
+            errorMsg = `❌ Could not fetch the website. ${data.error}`;
+          } else if (errorType === 'AI_ERROR') {
+            errorMsg = `🤖 AI service error: ${data.error}. Please try again.`;
+          } else if (errorType === 'API_KEY_ERROR') {
+            errorMsg = `🔑 API key error: ${data.error}. Please check your API key.`;
+            // Clear invalid API key and account ID
+            userApiKey = '';
+            userAccountId = '';
+            localStorage.removeItem('tomcp_api_key');
+            localStorage.removeItem('tomcp_account_id');
+            updateApiKeyUI();
+            renderModels();
+          }
+
+          addMessage('assistant', errorMsg);
         } else {
           addMessage('assistant', data.response);
           chatHistory.push({ role: 'assistant', content: data.response });
         }
       } catch (error) {
         removeLoadingIndicator();
-        addMessage('assistant', `Failed to get response. Please try again. (${error.message})`);
+        addMessage('assistant', `❌ Failed to get response. Please try again. (${error.message})`);
       }
 
       isLoading = false;

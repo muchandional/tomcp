@@ -254,6 +254,133 @@ ${websiteContent}`;
   throw lastError || new Error('AI request failed after retries');
 }
 
+// Chat using user's own Cloudflare API key (REST API)
+// This uses the user's own quota, not the shared free tier
+async function chatWithUserApiKey(
+  apiKey: string,
+  accountId: string,
+  websiteUrl: string,
+  websiteContent: string,
+  userMessage: string,
+  chatHistory: Array<{ role: string; content: string }>,
+  modelId: string = DEFAULT_MODEL
+): Promise<string> {
+  const systemPrompt = `You are a helpful assistant that answers questions about the website ${websiteUrl}.
+You have access to the website's content below. Answer questions based on this content.
+If the answer isn't in the content, say so honestly.
+
+Website Content:
+${websiteContent}`;
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...chatHistory.slice(-6),
+    { role: 'user', content: userMessage },
+  ];
+
+  const model = modelId.startsWith('@') ? modelId : DEFAULT_MODEL;
+
+  const response = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${model}`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages,
+        max_tokens: 1024,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({})) as { errors?: Array<{ message: string }> };
+    const errorMsg = errorData.errors?.[0]?.message || `API error: ${response.status}`;
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Invalid API key. Please check your Cloudflare API token.');
+    }
+    if (response.status === 429) {
+      throw new Error('API rate limit exceeded on your account.');
+    }
+    throw new Error(`Cloudflare API error: ${errorMsg}`);
+  }
+
+  const data = await response.json() as { result?: { response?: string }; success?: boolean; errors?: Array<{ message: string }> };
+
+  if (!data.success) {
+    throw new Error(data.errors?.[0]?.message || 'AI request failed');
+  }
+
+  return data.result?.response || 'No response generated';
+}
+
+// Validate API key and get user's account ID
+async function validateApiKey(apiKey: string): Promise<{ valid: boolean; error?: string; accountId?: string }> {
+  try {
+    // Step 1: Verify the token is valid
+    const verifyResponse = await fetch('https://api.cloudflare.com/client/v4/user/tokens/verify', {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (verifyResponse.status === 401 || verifyResponse.status === 403) {
+      return { valid: false, error: 'Invalid API key. Please check your Cloudflare API token.' };
+    }
+
+    const verifyData = await verifyResponse.json() as { success?: boolean };
+    if (!verifyData.success) {
+      return { valid: false, error: 'Invalid API key. Token verification failed.' };
+    }
+
+    // Step 2: Get the user's accounts
+    const accountsResponse = await fetch('https://api.cloudflare.com/client/v4/accounts?per_page=1', {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!accountsResponse.ok) {
+      return { valid: false, error: 'Could not retrieve account info. Make sure your API token has Account permissions.' };
+    }
+
+    const accountsData = await accountsResponse.json() as {
+      success?: boolean;
+      result?: Array<{ id: string; name: string }>;
+    };
+
+    if (!accountsData.success || !accountsData.result?.length) {
+      return { valid: false, error: 'No accounts found. Make sure your API token has Account read permissions.' };
+    }
+
+    const userAccountId = accountsData.result[0].id;
+
+    // Step 3: Verify AI access on this account
+    const aiResponse = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${userAccountId}/ai/models/search?per_page=1`,
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!aiResponse.ok) {
+      return { valid: false, error: 'API key valid but no Workers AI access. Make sure your token has Workers AI permissions.' };
+    }
+
+    return { valid: true, accountId: userAccountId };
+  } catch (error) {
+    return { valid: false, error: error instanceof Error ? error.message : 'Validation failed' };
+  }
+}
+
 // MCP Protocol handlers
 function createMcpResponse(id: number | string, result: unknown) {
   return {
@@ -303,6 +430,30 @@ export default {
       return Response.json(models, { headers: corsHeaders });
     }
 
+    // ========== VALIDATE API KEY ==========
+    if (path === 'validate-api-key' && request.method === 'POST') {
+      try {
+        const body = await request.json() as { apiKey?: string };
+        const { apiKey } = body;
+
+        if (!apiKey || apiKey.length < 10) {
+          return Response.json(
+            { valid: false, error: 'API key is required and must be at least 10 characters.' },
+            { status: 400, headers: corsHeaders }
+          );
+        }
+
+        const result = await validateApiKey(apiKey);
+
+        return Response.json(result, { headers: corsHeaders });
+      } catch (error) {
+        return Response.json(
+          { valid: false, error: error instanceof Error ? error.message : 'Validation failed' },
+          { status: 500, headers: corsHeaders }
+        );
+      }
+    }
+
     // ========== CHAT API ==========
     if (path === 'chat' && request.method === 'POST') {
       try {
@@ -310,22 +461,24 @@ export default {
           url: string;
           message: string;
           history?: Array<{ role: string; content: string }>;
-          apiKey?: string; // Optional: user's own API key to bypass rate limits
+          apiKey?: string; // Optional: user's own API key (uses their quota)
+          accountId?: string; // Optional: user's Cloudflare account ID (required with apiKey)
           model?: string; // Optional: model ID to use (e.g. "@cf/microsoft/phi-2")
         };
 
-        const { apiKey, model = DEFAULT_MODEL } = body;
-        const hasApiKey = !!apiKey && apiKey.length > 10;
+        const { apiKey, accountId: userAccountId, model = DEFAULT_MODEL } = body;
+        const hasValidApiKey = !!apiKey && apiKey.length > 20 && !!userAccountId; // Need both key and account ID
 
         // Only check rate limit if no API key provided
-        if (!hasApiKey) {
+        if (!hasValidApiKey) {
           const clientIP = getClientIP(request);
           const rateLimit = isRateLimited(clientIP);
 
           if (rateLimit.limited) {
             return Response.json(
               {
-                error: rateLimit.reason || `Rate limit exceeded. Try again in ${Math.ceil(rateLimit.resetIn / 1000)} seconds.`,
+                error: 'Rate limit exceeded. Add a Cloudflare API key to use your own quota and bypass limits.',
+                errorType: 'RATE_LIMIT',
                 retryAfter: Math.ceil(rateLimit.resetIn / 1000)
               },
               {
@@ -344,40 +497,78 @@ export default {
 
         if (!websiteUrl || !message) {
           return Response.json(
-            { error: 'Missing required fields: url and message' },
+            { error: 'Missing required fields: url and message', errorType: 'VALIDATION' },
             { status: 400, headers: corsHeaders }
           );
         }
 
-        // Check for AI binding
-        if (!env.AI) {
-          return Response.json(
-            { error: 'Chat is not configured. AI binding missing.' },
-            { status: 500, headers: corsHeaders }
-          );
-        }
-
-        // Fetch website content
+        // Fetch website content first
         const fullUrl = websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`;
         const content = await fetchWebsiteContent(fullUrl);
 
-        // Chat with Cloudflare AI
-        const response = await chatWithAI(
-          env.AI,
-          fullUrl,
-          content,
-          message,
-          history,
-          model
-        );
+        // Check if website fetch failed
+        if (content.startsWith('Error:') || content.startsWith('Error fetching')) {
+          return Response.json(
+            { error: `Could not fetch website: ${content}`, errorType: 'FETCH_ERROR' },
+            { status: 400, headers: corsHeaders }
+          );
+        }
+
+        let response: string;
+
+        // Use user's API key if provided, otherwise use free tier
+        if (hasValidApiKey) {
+          try {
+            response = await chatWithUserApiKey(
+              apiKey,
+              userAccountId!, // User's account ID (validated above)
+              fullUrl,
+              content,
+              message,
+              history,
+              model
+            );
+          } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : 'API request failed';
+            return Response.json(
+              { error: errorMsg, errorType: 'API_KEY_ERROR' },
+              { status: 401, headers: corsHeaders }
+            );
+          }
+        } else {
+          // Check for AI binding (free tier)
+          if (!env.AI) {
+            return Response.json(
+              { error: 'Chat is not configured. AI binding missing.', errorType: 'CONFIG_ERROR' },
+              { status: 500, headers: corsHeaders }
+            );
+          }
+
+          try {
+            response = await chatWithAI(
+              env.AI,
+              fullUrl,
+              content,
+              message,
+              history,
+              model
+            );
+          } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : 'AI request failed';
+            return Response.json(
+              { error: `AI service error: ${errorMsg}`, errorType: 'AI_ERROR' },
+              { status: 500, headers: corsHeaders }
+            );
+          }
+        }
 
         return Response.json(
-          { response, url: fullUrl },
+          { response, url: fullUrl, usedApiKey: hasValidApiKey },
           { headers: corsHeaders }
         );
       } catch (error) {
         return Response.json(
-          { error: error instanceof Error ? error.message : 'Chat failed' },
+          { error: error instanceof Error ? error.message : 'Chat failed', errorType: 'UNKNOWN' },
           { status: 500, headers: corsHeaders }
         );
       }
